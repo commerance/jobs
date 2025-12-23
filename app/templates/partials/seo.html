@@ -1,0 +1,58 @@
+<!-- templates/partials/seo.html -->
+{% if meta_title %}
+<meta name="title" content="{{ meta_title }}">
+{% endif %}
+
+{% if meta_description %}
+<meta name="description" content="{{ meta_description }}">
+{% endif %}
+
+{% if canonical_url %}
+<link rel="canonical" href="{{ canonical_url }}">
+{% endif %}
+
+{% if robots %}
+<meta name="robots" content="{{ robots }}">
+{% else %}
+<meta name="robots" content="index, follow">
+{% endif %}
+
+{% if og_title %}
+<meta property="og:title" content="{{ og_title }}">
+{% endif %}
+
+{% if og_description %}
+<meta property="og:description" content="{{ og_description }}">
+{% endif %}
+
+{% if og_url %}
+<meta property="og:url" content="{{ og_url }}">
+{% endif %}
+
+{% if og_type %}
+<meta property="og:type" content="{{ og_type }}">
+{% else %}
+<meta property="og:type" content="website">
+{% endif %}
+
+{% if og_image %}
+<meta property="og:image" content="{{ og_image }}">
+{% endif %}
+
+{% if twitter_card %}
+<meta name="twitter:card" content="{{ twitter_card }}">
+{% else %}
+<meta name="twitter:card" content="summary_large_image">
+{% endif %}
+
+{% if twitter_title %}
+<meta name="twitter:title" content="{{ twitter_title }}">
+{% endif %}
+
+{% if twitter_description %}
+<meta name="twitter:description" content="{{ twitter_description }}">
+{% endif %}
+
+{% if twitter_image %}
+<meta name="twitter:image" content="{{ twitter_image }}">
+{% endif %}
