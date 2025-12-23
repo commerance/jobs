@@ -1,0 +1,214 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Find Remote & International Jobs Worldwide | JobSearch{% endblock %}
+
+{% block meta %}
+{% set meta_title = "Find Remote & International Jobs Worldwide | JobSearch" %}
+{% set meta_description = "Discover remote jobs, visa-sponsored positions, and opportunities for international graduates. Search thousands of verified jobs across healthcare, IT, engineering, and more." %}
+{% set canonical_url = url_for('main.index', _external=True) %}
+{% set og_title = "Find Remote & International Jobs Worldwide" %}
+{% set og_description = "Search remote jobs, visa-sponsored positions, and international opportunities. Start your global career today." %}
+{% set og_url = url_for('main.index', _external=True) %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container container-narrow">
+        <h1>Find Remote & International Jobs Worldwide</h1>
+        <p>Connect with top employers offering remote work, visa sponsorship, and opportunities for international graduates. Search thousands of verified positions across all industries.</p>
+        
+        <form class="search-form" action="{{ url_for('jobs.all_jobs') }}" method="get">
+            <div class="search-form-grid">
+                <div class="form-group">
+                    <label for="keyword" class="sr-only">Job Title or Keyword</label>
+                    <input 
+                        type="text" 
+                        id="keyword" 
+                        name="q" 
+                        class="form-input" 
+                        placeholder="Job title or keyword"
+                        aria-label="Job title or keyword">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location" class="sr-only">Location</label>
+                    <input 
+                        type="text" 
+                        id="location" 
+                        name="location" 
+                        class="form-input" 
+                        placeholder="Location or Remote"
+                        aria-label="Location">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">Search Jobs</button>
+            </div>
+        </form>
+        
+        <p class="hero-trust">Trusted by professionals in over 50 countries seeking remote and international opportunities</p>
+    </div>
+</section>
+
+<section class="entry-points">
+    <div class="container">
+        <div class="grid grid-cols-3">
+            <article class="entry-card">
+                <h2>Remote Jobs</h2>
+                <p>Work from anywhere in the world. Browse remote positions from companies embracing flexible work arrangements.</p>
+                <a href="{{ url_for('main.remote_jobs') }}" class="btn btn-outline">Explore Remote Jobs</a>
+            </article>
+            
+            <article class="entry-card">
+                <h2>Jobs for International Graduates</h2>
+                <p>Start your career abroad. Find employers welcoming international talent and recent graduates from around the world.</p>
+                <a href="{{ url_for('main.international_graduates') }}" class="btn btn-outline">Find Graduate Jobs</a>
+            </article>
+            
+            <article class="entry-card">
+                <h2>Visa Sponsored Jobs</h2>
+                <p>Relocate with confidence. Discover companies offering work visa sponsorship for qualified international candidates.</p>
+                <a href="{{ url_for('main.visa_sponsored_jobs') }}" class="btn btn-outline">View Visa Jobs</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="categories">
+    <div class="container">
+        <h2>Browse Jobs by Category</h2>
+        <div class="category-grid">
+            {% for category in categories %}
+            <a href="{{ url_for('jobs.jobs_by_category', category_slug=category.slug) }}" class="category-item">
+                <span class="category-name">{{ category.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="latest-jobs">
+    <div class="container">
+        <div class="section-header">
+            <h2>Latest Job Openings</h2>
+            <a href="{{ url_for('jobs.all_jobs') }}" class="btn btn-outline">View All Jobs</a>
+        </div>
+        
+        <div class="jobs-list">
+            {% for job in latest_jobs %}
+            <article class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <h3 class="job-card-title">
+                            <a href="{{ url_for('jobs.job_detail', job_slug=job.slug) }}">{{ job.title }}</a>
+                        </h3>
+                        <p class="job-card-company">{{ job.company.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="job-card-meta">
+                    <span>
+                        {% if job.is_remote %}
+                        Remote
+                        {% elif job.country %}
+                        {{ job.city if job.city else job.country.name }}
+                        {% else %}
+                        Location not specified
+                        {% endif %}
+                    </span>
+                    <span>Posted {{ job.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                
+                <div class="job-card-footer">
+                    {% if job.is_remote %}
+                    <span class="badge badge-primary">Remote</span>
+                    {% endif %}
+                    {% if job.visa_sponsorship %}
+                    <span class="badge badge-success">Visa Sponsored</span>
+                    {% endif %}
+                    {% if job.experience_level %}
+                    <span class="badge">{{ job.experience_level }}</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="regions">
+    <div class="container">
+        <h2>Find Jobs by Country</h2>
+        <div class="region-grid">
+            {% for country in featured_countries %}
+            <a href="{{ url_for('jobs.jobs_by_country', country_slug=country.slug) }}" class="region-link">
+                Jobs in {{ country.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="seo-content">
+    <div class="container container-narrow">
+        <article class="content-article">
+            <h2>Your Gateway to Global Career Opportunities</h2>
+            
+            <p>Finding the right job in today's global marketplace requires access to opportunities that match your skills, location preferences, and career aspirations. Whether you're seeking remote work flexibility, exploring international opportunities as a recent graduate, or looking for positions with visa sponsorship, our platform connects you with employers worldwide who value diverse talent and global perspectives.</p>
+            
+            <h3>Remote Jobs: Work From Anywhere</h3>
+            
+            <p>The rise of remote work has transformed how professionals approach their careers. Our <a href="{{ url_for('main.remote_jobs') }}">remote jobs section</a> features positions from companies that have embraced distributed teams and flexible work arrangements. From software development and digital marketing to customer support and project management, remote opportunities span virtually every industry and skill level. These positions allow you to maintain work-life balance while building your career without geographical constraints.</p>
+            
+            <p>Remote work isn't just about working from home—it's about accessing opportunities with companies around the world that prioritize results over physical presence. Whether you're a digital nomad, prefer working from your home country, or simply value flexibility, remote positions offer the freedom to design your ideal work environment while contributing to global teams.</p>
+            
+            <h3>International Graduate Opportunities</h3>
+            
+            <p>Completing your education is just the beginning of your professional journey. For international students and recent graduates, finding that crucial first role in a new country can be challenging. Our <a href="{{ url_for('main.international_graduates') }}">jobs for international graduates</a> section specifically highlights employers who actively recruit international talent and understand the unique value that diverse educational backgrounds bring to their organizations.</p>
+            
+            <p>These opportunities include graduate programs, entry-level positions, and trainee roles designed to help you transition from academia to the professional world. Many of these employers offer mentorship programs, cultural integration support, and career development pathways that recognize the potential of internationally educated professionals. Whether you studied engineering, healthcare, business, or the humanities, companies worldwide are seeking graduates who bring fresh perspectives and global mindsets to their teams.</p>
+            
+            <h3>Visa Sponsorship and Relocation Support</h3>
+            
+            <p>One of the most significant barriers to international employment is securing the right to work in a new country. Our <a href="{{ url_for('main.visa_sponsored_jobs') }}">visa-sponsored jobs</a> feature positions from employers committed to supporting international talent through the immigration process. These companies handle work permit applications, provide relocation assistance, and guide you through the complexities of moving to a new country for work.</p>
+            
+            <p>Visa sponsorship opportunities exist across numerous sectors including healthcare, technology, engineering, education, and skilled trades. Countries like Canada, the United States, United Kingdom, Australia, and Germany have established immigration pathways specifically designed to attract skilled workers in high-demand fields. Employers offering visa sponsorship recognize that exceptional talent exists worldwide and are willing to invest in bringing qualified professionals to their organizations.</p>
+            
+            <h3>Industry-Specific Opportunities</h3>
+            
+            <p>Our platform covers diverse industries with specialized hiring needs. Healthcare professionals can find positions in hospitals, clinics, and healthcare systems across multiple countries, many offering visa sponsorship for qualified nurses, doctors, and allied health workers. Technology companies are constantly seeking software engineers, data scientists, and IT specialists for both remote and onsite roles with competitive compensation packages.</p>
+            
+            <p>Engineering firms recruit civil, mechanical, electrical, and chemical engineers for infrastructure projects worldwide. The education sector offers opportunities for teachers, professors, and education administrators, particularly in international schools and universities. Pharmaceutical and biotech companies seek researchers, regulatory specialists, and quality assurance professionals. Financial services organizations hire analysts, accountants, and advisors for their global operations.</p>
+            
+            <h3>How to Maximize Your Job Search</h3>
+            
+            <p>Success in the international job market requires a strategic approach. Start by clearly identifying your target locations, industry preferences, and whether you need visa sponsorship. Tailor your application materials to highlight international experience, language skills, and cultural adaptability. Research companies' track records with international hires and their support systems for relocated employees.</p>
+            
+            <p>Use our advanced search filters to narrow opportunities by <a href="{{ url_for('jobs.all_jobs') }}">category</a>, location, remote work options, and visa sponsorship availability. Set up job alerts to receive notifications about new positions matching your criteria. Read job descriptions carefully to understand requirements and whether positions are open to international applicants.</p>
+            
+            <h3>Building Your Global Career</h3>
+            
+            <p>Whether you're taking your first steps into the international job market or looking to advance your global career, the key is accessing the right opportunities at the right time. Companies are increasingly recognizing that talent knows no borders, and the best candidates may be located anywhere in the world. This shift has created unprecedented opportunities for professionals willing to work remotely or relocate for the right position.</p>
+            
+            <p>Your career journey might start with a remote position that builds your experience, progress to a visa-sponsored role in a new country, or involve multiple international relocations as you develop specialized expertise. The global job market rewards adaptability, continuous learning, and the ability to work effectively across cultures and time zones.</p>
+            
+            <h3>Start Your Search Today</h3>
+            
+            <p>Thousands of employers worldwide are actively seeking talented professionals like you. Browse our comprehensive listings, apply filters that match your goals, and take the next step in your career journey. Whether you're seeking remote flexibility, international experience, or the stability of visa sponsorship, opportunities await across healthcare, technology, engineering, education, and countless other fields.</p>
+            
+            <p>The global workplace is more accessible than ever before. Start exploring opportunities today and discover roles that align with your skills, aspirations, and desired lifestyle. Your next career opportunity could be anywhere in the world—or right from your home office.</p>
+        </article>
+    </div>
+</section>
+
+<section class="cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Your Global Job Search?</h2>
+            <p>Explore thousands of verified jobs from employers worldwide. Find remote positions, visa-sponsored opportunities, and roles perfect for international professionals.</p>
+            <a href="{{ url_for('jobs.all_jobs') }}" class="btn btn-primary btn-lg">Explore All Jobs</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
