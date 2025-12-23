@@ -60,4 +60,8 @@
                     setTimeout(function() {
                         alert.remove();
                     }, 300);
-                }, index
+                }, index100);
+});
+}, 5000);
+}
+})();
