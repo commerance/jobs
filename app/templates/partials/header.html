@@ -1,0 +1,35 @@
+<!-- templates/partials/header.html -->
+<header class="site-header">
+    <div class="container">
+        <div class="header-inner">
+            <div class="header-logo">
+                <a href="{{ url_for('main.index') }}" class="logo-link">
+                    <span class="logo-text">JobSearch</span>
+                </a>
+            </div>
+            
+            <button class="mobile-menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+                <span class="hamburger"></span>
+            </button>
+            
+            <nav class="main-nav" aria-label="Main navigation">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{{ url_for('jobs.all_jobs') }}" class="nav-link">Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.remote_jobs') }}" class="nav-link">Remote Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.visa_sponsored_jobs') }}" class="nav-link">Visa Sponsored</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('blog.blog_index') }}" class="nav-link">Blog</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
