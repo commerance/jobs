@@ -1,0 +1,96 @@
+<!-- templates/blog_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | JobSearch Blog{% endblock %}
+
+{% block meta %}
+{% set meta_title = post.meta_title if post.meta_title else post.title %}
+{% set meta_description = post.meta_description if post.meta_description else post.title %}
+{% set canonical_url = url_for('blog.blog_post_detail', post_slug=post.slug, _external=True) %}
+{% set og_title = meta_title %}
+{% set og_description = meta_description %}
+{% set og_url = canonical_url %}
+{% set og_type = "article" %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block schema %}
+{% if blog_schema %}
+<script type="application/ld+json">
+{{ blog_schema | safe }}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<article class="blog-post">
+    <div class="container container-narrow">
+        <header class="blog-header">
+            <h1>{{ post.title }}</h1>
+            
+            <div class="blog-meta">
+                <span class="blog-author">By JobSearch Team</span>
+                <span class="blog-date">
+                    <time datetime="{{ post.created_at.isoformat() }}">{{ post.created_at.strftime('%B %d, %Y') }}</time>
+                </span>
+            </div>
+        </header>
+        
+        <div class="blog-content">
+            {{ post.content | safe }}
+        </div>
+    </div>
+</article>
+
+<section class="blog-links">
+    <div class="container container-narrow">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Explore Job Opportunities</h2>
+            </div>
+            <div class="card-body">
+                <div class="link-list">
+                    <a href="{{ url_for('jobs.all_jobs') }}">Browse All Jobs</a>
+                    <a href="{{ url_for('main.remote_jobs') }}">Remote Jobs</a>
+                    <a href="{{ url_for('main.visa_sponsored_jobs') }}">Visa Sponsored Jobs</a>
+                    <a href="{{ url_for('main.international_graduates') }}">Jobs for International Graduates</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if related_posts and related_posts|length > 0 %}
+<section class="related-posts">
+    <div class="container">
+        <h2>Related Articles</h2>
+        
+        <div class="grid grid-cols-3">
+            {% for related in related_posts[:3] %}
+            <article class="card">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <a href="{{ url_for('blog.blog_post_detail', post_slug=related.slug) }}">{{ related.title }}</a>
+                    </h3>
+                    {% if related.meta_description %}
+                    <p>{{ related.meta_description }}</p>
+                    {% endif %}
+                    <time datetime="{{ related.created_at.isoformat() }}">{{ related.created_at.strftime('%B %d, %Y') }}</time>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="blog-cta">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Find Your Next Opportunity?</h2>
+            <p>Explore thousands of job listings from companies worldwide. Whether you're seeking remote work, visa sponsorship, or local opportunities, start your search today.</p>
+            <a href="{{ url_for('jobs.all_jobs') }}" class="btn btn-primary btn-lg">Start Job Search</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
