@@ -1,0 +1,149 @@
+<!-- templates/remote_jobs.html -->
+{% extends "base.html" %}
+
+{% block title %}Remote Jobs Worldwide | Work From Home Jobs | JobSearch{% endblock %}
+
+{% block meta %}
+{% set meta_title = "Remote Jobs Worldwide | Work From Home Jobs" %}
+{% set meta_description = "Find remote jobs from companies worldwide. Browse work-from-home opportunities in tech, marketing, design, customer support, and more. Start your remote career today." %}
+{% set canonical_url = url_for('main.remote_jobs', _external=True) %}
+{% set og_title = "Remote Jobs Worldwide - Work From Anywhere" %}
+{% set og_description = "Discover remote job opportunities from leading companies. Work from home or anywhere in the world." %}
+{% set og_url = canonical_url %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1>Remote Jobs Worldwide</h1>
+        <p>Discover work-from-home opportunities with companies embracing remote work culture. Browse thousands of remote positions across all industries and experience levels, and build your career from anywhere in the world.</p>
+        <a href="#remote-jobs-list" class="btn btn-primary btn-lg">Browse Remote Jobs</a>
+    </div>
+</section>
+
+<section class="category-filters">
+    <div class="container">
+        <h2>Popular Remote Job Categories</h2>
+        <div class="category-grid">
+            {% for category in categories %}
+            <a href="{{ url_for('jobs.jobs_by_category', category_slug=category.slug) }}?remote=true" class="category-card">
+                <span class="category-name">{{ category.name }}</span>
+                <span class="category-meta">Remote Positions</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="remote-jobs-list" id="remote-jobs-list">
+    <div class="container">
+        <h2>Latest Remote Job Openings</h2>
+        
+        <div class="jobs-list">
+            {% for job in remote_jobs %}
+            <article class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <h3 class="job-card-title">
+                            <a href="{{ url_for('jobs.job_detail', job_slug=job.slug) }}">{{ job.title }}</a>
+                        </h3>
+                        <p class="job-card-company">
+                            <a href="{{ url_for('companies.company_profile', company_slug=job.company.slug) }}">{{ job.company.name }}</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="job-card-meta">
+                    <span>Remote</span>
+                    <span>Posted {{ job.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                
+                <div class="job-card-footer">
+                    <span class="badge badge-primary">Remote</span>
+                    {% if job.visa_sponsorship %}
+                    <span class="badge badge-success">Visa Sponsored</span>
+                    {% endif %}
+                    {% if job.experience_level %}
+                    <span class="badge">{{ job.experience_level }}</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        {% if pagination %}
+        <nav class="pagination" aria-label="Job listings pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('main.remote_jobs', page=pagination.prev_num) }}" class="pagination-item">Previous</a>
+            {% else %}
+            <span class="pagination-item disabled">Previous</span>
+            {% endif %}
+            
+            {% for page_num in range(1, pagination.pages + 1) %}
+                {% if page_num == pagination.page %}
+                <span class="pagination-item active">{{ page_num }}</span>
+                {% else %}
+                <a href="{{ url_for('main.remote_jobs', page=page_num) }}" class="pagination-item">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+            <a href="{{ url_for('main.remote_jobs', page=pagination.next_num) }}" class="pagination-item">Next</a>
+            {% else %}
+            <span class="pagination-item disabled">Next</span>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+
+<section class="why-remote">
+    <div class="container container-narrow">
+        <article class="content-article">
+            <h2>Why Choose Remote Work?</h2>
+            
+            <p>Remote work has transformed from a rare perk to a fundamental way companies operate globally. Working remotely offers unprecedented freedom to design your ideal work environment, eliminate commute time, and achieve better work-life balance. Whether you're a software developer in Southeast Asia, a marketing specialist in Europe, or a customer support representative in South America, remote positions allow you to access opportunities with leading companies worldwide without geographical constraints.</p>
+            
+            <h3>Benefits of Remote Jobs</h3>
+            
+            <p>The advantages of remote work extend beyond flexibility. Remote positions often provide access to higher salaries from companies in developed markets while allowing you to live in locations with lower costs of living. You can work from home, co-working spaces, or while traveling as a digital nomad. Remote work eliminates time wasted in traffic, reduces stress, and gives you more time for family, hobbies, and personal development. Many remote workers report increased productivity, better focus, and improved job satisfaction compared to traditional office environments.</p>
+            
+            <p>Companies offering remote positions span every industry imaginable. <a href="{{ url_for('jobs.jobs_by_category', category_slug='technology') }}?remote=true">Technology and software development</a> roles lead the remote work revolution, but opportunities also abound in marketing, design, writing, customer service, project management, accounting, human resources, and education. Healthcare providers offer telemedicine positions, while financial services companies hire remote analysts and advisors. The diversity of remote opportunities means professionals at all career stages can find positions matching their skills and aspirations.</p>
+            
+            <h3>Who Should Apply for Remote Jobs?</h3>
+            
+            <p>Remote work suits self-motivated professionals who thrive with independence and can manage their time effectively. If you value flexibility, prefer working in your own environment, and have strong communication skills, remote positions offer ideal career paths. International professionals seeking opportunities with companies in other countries particularly benefit from remote work, as these positions often don't require relocation or <a href="{{ url_for('main.visa_sponsored_jobs') }}">visa sponsorship</a>. Parents balancing family responsibilities, individuals with disabilities seeking accessible work arrangements, and anyone prioritizing work-life integration find remote jobs especially valuable.</p>
+            
+            <p>The global hiring trend continues accelerating as companies recognize that talent exists everywhere. Organizations that once required office attendance now compete for the best candidates worldwide, offering remote positions to access broader talent pools. This shift benefits both employers and employees, creating opportunities for professionals in regions previously underserved by quality job markets. Whether you're an experienced remote worker or considering your first work-from-home position, thousands of companies are actively hiring remote talent across all experience levels and industries.</p>
+        </article>
+    </div>
+</section>
+
+<section class="related-pages">
+    <div class="container">
+        <h2>Explore More Opportunities</h2>
+        <div class="link-grid">
+            <a href="{{ url_for('main.visa_sponsored_jobs') }}" class="link-card">
+                <h3>Visa Sponsored Jobs</h3>
+                <p>Find employers offering work visa sponsorship</p>
+            </a>
+            
+            <a href="{{ url_for('main.international_graduates') }}" class="link-card">
+                <h3>Jobs for International Graduates</h3>
+                <p>Entry-level opportunities for recent graduates</p>
+            </a>
+            
+            <a href="{{ url_for('jobs.all_jobs') }}" class="link-card">
+                <h3>All Job Listings</h3>
+                <p>Browse complete job database</p>
+            </a>
+            
+            <a href="{{ url_for('jobs.jobs_by_country', country_slug='united-states') }}" class="link-card">
+                <h3>Jobs in United States</h3>
+                <p>Explore US-based opportunities</p>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
