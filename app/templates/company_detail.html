@@ -1,0 +1,165 @@
+<!-- templates/company_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ company.name }} Careers & Jobs | JobSearch{% endblock %}
+
+{% block meta %}
+{% set meta_title = company.name ~ " Careers & Jobs" %}
+{% set meta_description = "Explore career opportunities at " ~ company.name ~ ". View open positions, company culture, and apply for jobs at " ~ company.name ~ "." %}
+{% set canonical_url = url_for('companies.company_profile', company_slug=company.slug, _external=True) %}
+{% set og_title = company.name ~ " Jobs & Careers" %}
+{% set og_description = meta_description %}
+{% set og_url = canonical_url %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block schema %}
+{% if company_schema %}
+<script type="application/ld+json">
+{{ company_schema | safe }}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="company-header">
+    <div class="container">
+        <div class="company-header-content">
+            <h1>{{ company.name }}</h1>
+            
+            <div class="company-meta">
+                {% if company.country %}
+                <span>📍 {{ company.country.name }}</span>
+                {% endif %}
+                {% if company.website %}
+                <a href="{{ company.website }}" target="_blank" rel="noopener noreferrer">Visit Website</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if company.description %}
+<section class="company-about">
+    <div class="container container-narrow">
+        <h2>About {{ company.name }}</h2>
+        <div class="company-description">
+            {{ company.description }}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="company-jobs">
+    <div class="container">
+        <h2>Open Positions at {{ company.name }}</h2>
+        
+        {% if jobs and jobs|length > 0 %}
+        <div class="jobs-list">
+            {% for job in jobs %}
+            <article class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <h3 class="job-card-title">
+                            <a href="{{ url_for('jobs.job_detail', job_slug=job.slug) }}">{{ job.title }}</a>
+                        </h3>
+                        <p class="job-card-company">{{ company.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="job-card-meta">
+                    <span>
+                        {% if job.is_remote %}
+                        Remote
+                        {% elif job.country %}
+                        {{ job.city if job.city else job.country.name }}
+                        {% else %}
+                        Location not specified
+                        {% endif %}
+                    </span>
+                    <span>Posted {{ job.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                
+                <div class="job-card-footer">
+                    {% if job.is_remote %}
+                    <span class="badge badge-primary">Remote</span>
+                    {% endif %}
+                    {% if job.visa_sponsorship %}
+                    <span class="badge badge-success">Visa Sponsored</span>
+                    {% endif %}
+                    {% if job.category %}
+                    <span class="badge">{{ job.category.name }}</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        {% if pagination %}
+        <nav class="pagination" aria-label="Company jobs pagination">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('companies.company_profile', company_slug=company.slug, page=pagination.prev_num) }}" class="pagination-item">Previous</a>
+            {% else %}
+            <span class="pagination-item disabled">Previous</span>
+            {% endif %}
+            
+            {% for page_num in range(1, pagination.pages + 1) %}
+                {% if page_num == pagination.page %}
+                <span class="pagination-item active">{{ page_num }}</span>
+                {% else %}
+                <a href="{{ url_for('companies.company_profile', company_slug=company.slug, page=page_num) }}" class="pagination-item">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            
+            {% if pagination.has_next %}
+            <a href="{{ url_for('companies.company_profile', company_slug=company.slug, page=pagination.next_num) }}" class="pagination-item">Next</a>
+            {% else %}
+            <span class="pagination-item disabled">Next</span>
+            {% endif %}
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="empty-state">
+            <p>{{ company.name }} is not currently hiring. Check back later for new opportunities.</p>
+            <a href="{{ url_for('jobs.all_jobs') }}" class="btn btn-primary">Browse All Jobs</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="company-info">
+    <div class="container container-narrow">
+        <h2>Company Information</h2>
+        
+        <dl class="info-list">
+            {% if company.country %}
+            <dt>Headquarters</dt>
+            <dd>{{ company.country.name }}</dd>
+            {% endif %}
+            
+            {% if company.website %}
+            <dt>Website</dt>
+            <dd><a href="{{ company.website }}" target="_blank" rel="noopener noreferrer">{{ company.website }}</a></dd>
+            {% endif %}
+        </dl>
+    </div>
+</section>
+
+<section class="company-seo-content">
+    <div class="container container-narrow">
+        <div class="seo-text">
+            <h2>Working at {{ company.name }}</h2>
+            <p>
+                {{ company.name }} offers diverse career opportunities for professionals seeking to grow their careers
+                {% if company.country %} in {{ company.country.name }} and beyond{% endif %}.
+                The company actively recruits talent across multiple disciplines and experience levels, providing pathways for both entry-level candidates and seasoned professionals.
+                {% if jobs and jobs|length > 0 %}
+                With {{ jobs|length }} open position{{ 's' if jobs|length != 1 else '' }} currently available, {{ company.name }} demonstrates ongoing commitment to team expansion and organizational growth.
+                {% endif %}
+                Professionals interested in joining {{ company.name }} can explore opportunities across various departments and specializations. The company's hiring approach reflects industry trends toward building diverse, skilled teams capable of driving innovation and achieving business objectives. Whether you're seeking <a href="{{ url_for('main.remote_jobs') }}">remote positions</a> or office-based roles, {{ company.name }} may offer opportunities aligned with your career goals. Browse current openings to discover how your skills and experience match the company's hiring needs.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
