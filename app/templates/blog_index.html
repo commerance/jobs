@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Career Advice & Job Search Blog | JobSearch{% endblock %}
+
+{% block meta %}
+{% set meta_title = "Career Advice & Job Search Blog" %}
+{% set meta_description = "Read the latest career advice, job search tips, and remote work guides to help you land your dream job." %}
+{% set canonical_url = url_for('blog.blog_index', _external=True) %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1>Career Advice & Blog</h1>
+        <p>Expert insights, job search tips, and guides to help you navigate your career journey.</p>
+    </div>
+</section>
+
+<section class="blog-list">
+    <div class="container">
+        {% if posts %}
+            <div class="grid grid-cols-3">
+                {% for post in posts %}
+                <article class="card h-full">
+                    <div class="card-body">
+                        <div class="blog-meta mb-2">
+                            <span class="text-sm text-gray-500">{{ post.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        <h2 class="card-title h3">
+                            <a href="{{ url_for('blog.blog_post_detail', post_slug=post.slug) }}">{{ post.title }}</a>
+                        </h2>
+                        {% if post.meta_description %}
+                        <p class="text-gray-600 mt-2">{{ post.meta_description[:120] }}...</p>
+                        {% endif %}
+                        <a href="{{ url_for('blog.blog_post_detail', post_slug=post.slug) }}" class="btn btn-outline btn-sm mt-4">Read Article</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            {% if pagination.pages > 1 %}
+            <nav class="pagination" aria-label="Blog pagination">
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('blog.blog_index', page=pagination.prev_num) }}" class="pagination-item">Previous</a>
+                {% endif %}
+                
+                {% for page_num in pagination.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num == pagination.page %}
+                        <span class="pagination-item active">{{ page_num }}</span>
+                        {% else %}
+                        <a href="{{ url_for('blog.blog_index', page=page_num) }}" class="pagination-item">{{ page_num }}</a>
+                        {% endif %}
+                    {% else %}
+                        <span class="pagination-item disabled">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagination.has_next %}
+                <a href="{{ url_for('blog.blog_index', page=pagination.next_num) }}" class="pagination-item">Next</a>
+                {% endif %}
+            </nav>
+            {% endif %}
+        {% else %}
+            <div class="empty-state text-center py-12">
+                <h3>No articles published yet</h3>
+                <p>Check back soon for new content!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
