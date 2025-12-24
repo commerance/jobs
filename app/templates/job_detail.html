@@ -1,0 +1,284 @@
+<!-- templates/job_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} at {{ job.company.name }}{% if job.country %} - {{ job.country.name }}{% elif job.is_remote %} - Remote{% endif %} | JobSearch{% endblock %}
+
+{% block meta %}
+{% set meta_title = job.title ~ " at " ~ job.company.name ~ (" - " ~ job.country.name if job.country else " - Remote") %}
+{% set meta_description = job.description[:155] ~ "..." if job.description|length > 155 else job.description %}
+{% set canonical_url = url_for('jobs.job_detail', job_slug=job.slug, _external=True) %}
+{% set og_title = meta_title %}
+{% set og_description = meta_description %}
+{% set og_url = canonical_url %}
+{% set og_type = "article" %}
+{% include 'partials/seo.html' %}
+{% endblock %}
+
+{% block schema %}
+{% if job_schema %}
+<script type="application/ld+json">
+{{ job_schema | safe }}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<nav aria-label="Breadcrumb" class="breadcrumb-nav">
+    <div class="container">
+        <ol class="breadcrumb-list">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('main.index') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('jobs.all_jobs') }}">Jobs</a>
+            </li>
+            {% if job.category %}
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('jobs.jobs_by_category', category_slug=job.category.slug) }}">{{ job.category.name }}</a>
+            </li>
+            {% endif %}
+            <li class="breadcrumb-item" aria-current="page">
+                {{ job.title }}
+            </li>
+        </ol>
+    </div>
+</nav>
+
+<article class="job-detail">
+    <div class="container container-narrow">
+        <header class="job-header">
+            <div class="job-header-main">
+                <h1>{{ job.title }}</h1>
+                
+                <div class="job-header-meta">
+                    <p class="job-company">
+                        <a href="{{ url_for('companies.company_profile', company_slug=job.company.slug) }}">{{ job.company.name }}</a>
+                    </p>
+                    
+                    <p class="job-location">
+                        {% if job.is_remote %}
+                        Remote
+                        {% elif job.country %}
+                            {% if job.city %}
+                            {{ job.city }}, {{ job.country.name }}
+                            {% else %}
+                            {{ job.country.name }}
+                            {% endif %}
+                        {% else %}
+                        Location not specified
+                        {% endif %}
+                    </p>
+                    
+                    <p class="job-posted">
+                        Posted <time datetime="{{ job.created_at.isoformat() }}">{{ job.created_at.strftime('%B %d, %Y') }}</time>
+                    </p>
+                </div>
+                
+                <div class="job-badges">
+                    {% if job.is_remote %}
+                    <span class="badge badge-primary">Remote</span>
+                    {% endif %}
+                    {% if job.visa_sponsorship %}
+                    <span class="badge badge-success">Visa Sponsored</span>
+                    {% endif %}
+                    {% if job.experience_level %}
+                    <span class="badge">{{ job.experience_level }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="job-apply-cta">
+                <a href="#" class="btn btn-primary btn-lg">Apply Now</a>
+            </div>
+        </header>
+        
+        <div class="job-content">
+            {% if job.description %}
+            <section class="job-section">
+                <h2>Job Overview</h2>
+                <div class="job-text">
+                    {{ job.description }}
+                </div>
+            </section>
+            {% endif %}
+            
+            {% if job.responsibilities %}
+            <section class="job-section">
+                <h2>Responsibilities</h2>
+                <div class="job-text">
+                    {{ job.responsibilities }}
+                </div>
+            </section>
+            {% endif %}
+            
+            {% if job.requirements %}
+            <section class="job-section">
+                <h2>Requirements</h2>
+                <div class="job-text">
+                    {{ job.requirements }}
+                </div>
+            </section>
+            {% endif %}
+            
+            {% if job.degree_required or job.experience_level %}
+            <section class="job-section">
+                <h2>Qualifications</h2>
+                <div class="job-text">
+                    {% if job.degree_required %}
+                    <p><strong>Education:</strong> {{ job.degree_required }}</p>
+                    {% endif %}
+                    {% if job.experience_level %}
+                    <p><strong>Experience Level:</strong> {{ job.experience_level }}</p>
+                    {% endif %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+        
+        <aside class="job-sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Job Details</h2>
+                </div>
+                <div class="card-body">
+                    <dl class="job-details-list">
+                        {% if job.category %}
+                        <dt>Category</dt>
+                        <dd>
+                            <a href="{{ url_for('jobs.jobs_by_category', category_slug=job.category.slug) }}">{{ job.category.name }}</a>
+                        </dd>
+                        {% endif %}
+                        
+                        {% if job.experience_level %}
+                        <dt>Experience Level</dt>
+                        <dd>{{ job.experience_level }}</dd>
+                        {% endif %}
+                        
+                        <dt>Employment Type</dt>
+                        <dd>Full-time</dd>
+                        
+                        <dt>Work Arrangement</dt>
+                        <dd>
+                            {% if job.is_remote %}
+                            Remote
+                            {% else %}
+                            On-site
+                            {% endif %}
+                        </dd>
+                        
+                        <dt>Visa Sponsorship</dt>
+                        <dd>
+                            {% if job.visa_sponsorship %}
+                            Available
+                            {% else %}
+                            Not available
+                            {% endif %}
+                        </dd>
+                        
+                        {% if job.country %}
+                        <dt>Location</dt>
+                        <dd>
+                            <a href="{{ url_for('jobs.jobs_by_country', country_slug=job.country.slug) }}">{{ job.country.name }}</a>
+                        </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">About {{ job.company.name }}</h2>
+                </div>
+                <div class="card-body">
+                    {% if job.company.description %}
+                    <p>{{ job.company.description[:200] }}{% if job.company.description|length > 200 %}...{% endif %}</p>
+                    {% else %}
+                    <p>{{ job.company.name }} is hiring for this position.</p>
+                    {% endif %}
+                    
+                    {% if job.company.website %}
+                    <p><a href="{{ job.company.website }}" target="_blank" rel="noopener noreferrer">Visit Company Website</a></p>
+                    {% endif %}
+                    
+                    <p><a href="{{ url_for('companies.company_profile', company_slug=job.company.slug) }}">View All Jobs at {{ job.company.name }}</a></p>
+                </div>
+            </div>
+        </aside>
+        
+        <div class="job-apply-bottom">
+            <a href="#" class="btn btn-primary btn-lg">Apply for this Position</a>
+        </div>
+    </div>
+</article>
+
+{% if related_jobs and related_jobs|length > 0 %}
+<section class="related-jobs">
+    <div class="container">
+        <h2>Related Job Opportunities</h2>
+        
+        <div class="jobs-grid">
+            {% for related_job in related_jobs[:6] %}
+            <article class="job-card">
+                <div class="job-card-header">
+                    <div>
+                        <h3 class="job-card-title">
+                            <a href="{{ url_for('jobs.job_detail', job_slug=related_job.slug) }}">{{ related_job.title }}</a>
+                        </h3>
+                        <p class="job-card-company">{{ related_job.company.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="job-card-meta">
+                    <span>
+                        {% if related_job.is_remote %}
+                        Remote
+                        {% elif related_job.country %}
+                        {{ related_job.city if related_job.city else related_job.country.name }}
+                        {% else %}
+                        Location not specified
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="job-card-footer">
+                    {% if related_job.is_remote %}
+                    <span class="badge badge-primary">Remote</span>
+                    {% endif %}
+                    {% if related_job.visa_sponsorship %}
+                    <span class="badge badge-success">Visa Sponsored</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="job-seo-content">
+    <div class="container container-narrow">
+        <div class="seo-text">
+            <h2>About {{ job.title }} Opportunities{% if job.country %} in {{ job.country.name }}{% endif %}</h2>
+            <p>
+                This {{ job.title }} position at {{ job.company.name }} represents an excellent opportunity for 
+                {% if job.experience_level %}{{ job.experience_level }} level{% endif %} professionals 
+                {% if job.category %}in the <a href="{{ url_for('jobs.jobs_by_category', category_slug=job.category.slug) }}">{{ job.category.name }}</a> field{% endif %}.
+                {% if job.is_remote %}
+                As a <a href="{{ url_for('main.remote_jobs') }}">remote position</a>, this role offers the flexibility to work from anywhere while contributing to a dynamic team.
+                {% elif job.country %}
+                Located in <a href="{{ url_for('jobs.jobs_by_country', country_slug=job.country.slug) }}">{{ job.country.name }}</a>, this position provides an opportunity to work 
+                {% if job.city %}in {{ job.city }}{% else %}in one of the region's leading organizations{% endif %}.
+                {% endif %}
+                {% if job.visa_sponsorship %}
+                The company offers <a href="{{ url_for('main.visa_sponsored_jobs') }}">visa sponsorship</a> for qualified international candidates, making this an ideal opportunity for professionals seeking to relocate and build their careers abroad.
+                {% endif %}
+                Professionals with the right qualifications and experience can explore this role and other similar opportunities on our platform. 
+                {% if job.category %}
+                Browse more <a href="{{ url_for('jobs.jobs_by_category', category_slug=job.category.slug) }}">{{ job.category.name }} jobs</a> to find positions that match your career goals.
+                {% endif %}
+                Whether you're an experienced professional or looking to take the next step in your career, opportunities like this one demonstrate the diverse range of positions available to talented individuals worldwide.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
